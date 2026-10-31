@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { onValue, ref, runTransaction, set, update } from "firebase/database";
+import { get, onValue, ref, runTransaction, set, update } from "firebase/database";
 import { auth, db, ensureAnonymousUser } from "./firebase";
 import { BeatEvent, makeCode, Phase, Point, PADS, Player, Room, SOUNDS, soundOptions } from "./game";
 import { playMystery, playPad, playRhythm, playMusic } from "./audio";
@@ -134,9 +134,15 @@ const [joinCode, setJoinCode] = useState("");
     if (!/^[A-HJ-NP-Z]{4}$/.test(code)) { setError("Enter a valid four-letter room code."); return; }
     setBusy(true); setError("");
     try {
-      const roomRef = ref(db, `rooms/${code}`);
-      const result = await runTransaction(roomRef, current => {
-        if (!current) return;
+  const roomRef = ref(db, `rooms/${code}`);
+  const roomSnapshot = await get(roomRef);
+
+  if (!roomSnapshot.exists()) {
+    throw new Error("Room not found. Check the four-letter code.");
+  }
+
+  const result = await runTransaction(roomRef, current => {
+        if (!current) return null;
         if (current.players?.[uid]) return current;
         const count = Object.keys(current.players || {}).length;
         if (count >= 3 || current.phase !== "lobby") return;
