@@ -13,6 +13,7 @@ const phaseLabels: Record<Phase, string> = {
 function App() {
   const [name, setName] = useState("");
   const [roomCode, setRoomCode] = useState("");
+const [joinCode, setJoinCode] = useState("");
   const [room, setRoom] = useState<Room | null>(null);
   const [uid, setUid] = useState("");
   const [busy, setBusy] = useState(false);
@@ -129,7 +130,7 @@ function App() {
 
   async function joinRoom() {
     if (!db || !uid) return;
-    const code = roomCode.trim().toUpperCase();
+    const code = joinCode.trim().toUpperCase();
     if (!/^[A-HJ-NP-Z]{4}$/.test(code)) { setError("Enter a valid four-letter room code."); return; }
     setBusy(true); setError("");
     try {
@@ -241,7 +242,7 @@ function App() {
           <div className="hero-actions">
             <input className="name-input" aria-label="Your name" placeholder="YOUR NAME" maxLength={18} value={name} onChange={e=>setName(e.target.value)} />
             <button className="btn primary" onClick={createRoom} disabled={busy || !uid}><Crown size={18}/> Create a room</button>
-            <div className="join-row"><input aria-label="Room code" maxLength={4} placeholder="ROOM CODE" value={roomCode} onChange={e=>setRoomCode(e.target.value.toUpperCase())}/><button className="btn dark" onClick={joinRoom} disabled={busy || !uid}>Join <ArrowRight size={16}/></button></div>
+            <div className="join-row"><input aria-label="Room code" maxLength={4} placeholder="ROOM CODE" value={joinCode} onChange={e=>setJoinCode(e.target.value.toUpperCase())}/><button className="btn dark" onClick={joinRoom} disabled={busy || !uid}>Join <ArrowRight size={16}/></button></div>
           </div>
           <div className="microcopy"><Users size={15}/> 3 players · 3 devices · 1 wonderfully distorted message</div>
           {error && <div className="error">{error}</div>}
