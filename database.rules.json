@@ -1,0 +1,18 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "rooms": {
+      "$roomCode": {
+        ".read": "auth != null",
+        ".write": "auth != null",
+        ".validate": "newData.hasChildren(['code', 'hostId', 'players', 'phase', 'createdAt'])",
+        "players": {
+          "$playerId": {
+            ".write": "auth != null && auth.uid === $playerId"
+          }
+        }
+      }
+    }
+  }
+}
